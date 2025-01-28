@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    floem::launch(mobius::app::app_view);
 }

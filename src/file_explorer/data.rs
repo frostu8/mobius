@@ -14,15 +14,10 @@ impl Tree {
     /// Creates a new `Tree` at a given base path.
     ///
     /// The base path is automatically inferred to be a directory.
-    pub fn new(base: impl Into<PathBuf>) -> Tree {
+    pub fn new(base: Node) -> Tree {
         // create root node @ index zero
-        let node = Node {
-            is_dir: true,
-            ..Node::new(base)
-        };
-
         let mut arena = im::Vector::new();
-        arena.push_back(Rc::new(node));
+        arena.push_back(Rc::new(base));
         Tree { arena }
     }
 
@@ -169,11 +164,11 @@ impl TreeIndex {
 /// A file explorer node.
 #[derive(Clone, Debug)]
 pub struct Node {
-    path: PathBuf,
-    is_dir: bool,
-    is_open: bool,
-    children: im::HashMap<PathBuf, TreeIndex>,
-    children_open_count: usize,
+    pub path: PathBuf,
+    pub is_dir: bool,
+    pub is_open: bool,
+    pub children: im::HashMap<PathBuf, TreeIndex>,
+    pub children_open_count: usize,
 }
 
 impl Node {
@@ -225,7 +220,11 @@ mod tests {
 
     #[test]
     fn test_update_node() {
-        let mut tree = Tree::new("/var");
+        let mut tree = Tree::new(Node {
+            is_dir: true,
+            is_open: true,
+            ..Node::new("/var")
+        });
 
         Rc::make_mut(tree.root_mut()).is_open = true;
 
@@ -250,7 +249,10 @@ mod tests {
 
     #[test]
     fn test_create_node() {
-        let mut tree = Tree::new("/var");
+        let mut tree = Tree::new(Node {
+            is_dir: true,
+            ..Node::new("/var")
+        });
         tree.create(Node::new("/var/opt"));
         tree.create(Node::new("/var/games"));
         tree.create(Node::new("/var/games/secret"));

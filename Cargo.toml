@@ -7,4 +7,6 @@ edition = "2021"
 description = "An asset packager for Doom PK3s"
 
 [dependencies]
+floem = "0.2"
 im = "15"
+walkdir = "2"
